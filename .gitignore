@@ -23,9 +23,10 @@ xcuserdata
 *.xcuserstate
 *.xcscmblueprint
 
-## Obj-C/Swift specific
+DerivedData
 *.hmap
 *.ipa
+*.xcuserstate
 
 # CocoaPods
 #
