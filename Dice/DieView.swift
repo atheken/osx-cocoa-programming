@@ -88,6 +88,18 @@ class DieView:NSView {
                     drawDot(1, 0.5)
                 }
             }
+            else{
+                var paraStyle = NSParagraphStyle.defaultParagraphStyle().mutableCopy() as! NSMutableParagraphStyle
+
+                paraStyle.alignment = .CenterTextAlignment
+                let font = NSFont.systemFontOfSize(edgeLength * 0.5)
+                let attrs = [NSForegroundColorAttributeName: NSColor.blackColor(),
+                    NSFontAttributeName: font,
+                    NSParagraphStyleAttributeName : paraStyle]
+
+                let string = "\(intValue)" as NSString
+                string.drawCenteredInRect(dieFrame, attributes: attrs)
+            }
 
         }
     }
@@ -168,5 +180,24 @@ class DieView:NSView {
 
     override func insertTab(sender: AnyObject?) {
         window?.selectNextKeyView(sender)
+    }
+
+    //MARK: exporting...
+
+    @IBAction func savePDF(sender:AnyObject!){
+        let savePanel = NSSavePanel()
+        savePanel.allowedFileTypes = ["pdf"]
+        savePanel.beginSheetModalForWindow(window!){
+            [unowned savePanel] (result) in
+            if result == NSModalResponseOK {
+                let data = self.dataWithPDFInsideRect(self.bounds)
+                var error:NSError?
+                let ok = data.writeToURL(savePanel.URL!, options: NSDataWritingOptions.AtomicWrite, error:&error)
+                if !ok {
+                    let alert = NSAlert(error:error!)
+                    alert.runModal()
+                }
+            }
+        }
     }
 }
