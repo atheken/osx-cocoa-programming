@@ -8,14 +8,35 @@
 
 import Cocoa
 
-class DieView:NSView {
+class DieView:NSView, NSDraggingSource {
+
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        commonInit()
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        commonInit()
+    }
+
+    func commonInit(){
+        self.registerForDraggedTypes([NSPasteboardTypeString])
+    }
 
     override func drawRect(dirtyRect: NSRect) {
         let backgroundColor = NSColor.lightGrayColor()
         backgroundColor.set()
         NSBezierPath.fillRect(bounds)
 
-        drawWithSize(bounds.size)
+        //drawWithSize(bounds.size)
+        if highlightForDragging {
+            let gradient = NSGradient(startingColor: NSColor.whiteColor(), endingColor: backgroundColor)
+            gradient.drawInRect(bounds, relativeCenterPosition:NSZeroPoint)
+        }
+        else {
+            drawWithSize(bounds.size)
+        }
     }
 
     func metricsForSize(size: CGSize) -> (edgeLength:CGFloat, dieFrame:CGRect) {
@@ -123,19 +144,45 @@ class DieView:NSView {
     // MARK: - Mouse Events
 
     override func mouseDown(theEvent:NSEvent){
+        mouseDownEvent = theEvent
         let dieFrame = metricsForSize(bounds.size).dieFrame
         let pointInView = convertPoint(theEvent.locationInWindow, fromView: nil)
         pressed = outlineForFrame(dieFrame).path.containsPoint(pointInView)
     }
 
     override func mouseDragged(theEvent: NSEvent) {
-        println("mouseDragged location: \(theEvent.locationInWindow)")
+        let downPoint = mouseDownEvent!.locationInWindow
+        let dragPoint = theEvent.locationInWindow
+        let distanceDragged = hypot(downPoint.x - dragPoint.x, downPoint.y - dragPoint.y)
+        if distanceDragged < 3 {
+            return
+        }
+        pressed = false
+        if let intValue = intValue {
+            let imageSize = bounds.size
+            let image = NSImage(size: imageSize, flipped:false){ i in
+                self.drawWithSize(i.size)
+                return true
+            }
+
+            let draggingFrameOrigin = convertPoint(downPoint, fromView: nil)
+            let draggingFrame = NSRect(origin: draggingFrameOrigin, size: imageSize).rectByOffsetting(dx: -imageSize.width/2, dy: -imageSize.height/2)
+
+            let item = NSDraggingItem(pasteboardWriter: "\(intValue)")
+            item.draggingFrame = draggingFrame
+            item.imageComponentsProvider = {
+                let component = NSDraggingImageComponent(key: NSDraggingImageComponentIconKey)
+                component.contents = image
+                component.frame = NSRect(origin: NSPoint(), size: imageSize)
+                return [component]
+            }
+            beginDraggingSessionWithItems([item], event: mouseDownEvent!, source: self)
+        }
     }
 
     override func mouseUp(theEvent: NSEvent) {
-        if theEvent.clickCount == 2 {
+        if theEvent.clickCount % 2 == 0 {
             randomize()
-
         }
         pressed = false
     }
@@ -199,5 +246,93 @@ class DieView:NSView {
                 }
             }
         }
+    }
+
+    //MARK: - Pasteboard
+
+    func writeToPasteboard(pasteboard:NSPasteboard){
+        if let intValue = intValue {
+            pasteboard.clearContents()
+            pasteboard.writeObjects(["\(intValue)"])
+        }
+    }
+
+    func readFromPasteboard(pasteboard:NSPasteboard) -> Bool {
+        let objects = pasteboard.readObjectsForClasses([NSString.self], options: [:]) as! [String]
+        if let str = objects.first {
+            intValue = str.toInt()
+            return true
+        }
+        return false
+    }
+
+    @IBAction func cut(sender:AnyObject?){
+        writeToPasteboard(NSPasteboard.generalPasteboard())
+        intValue = nil
+    }
+
+    @IBAction func copy(sender:AnyObject?) {
+        writeToPasteboard(NSPasteboard.generalPasteboard())
+    }
+
+    @IBAction func paste(sender:AnyObject?){
+        readFromPasteboard(NSPasteboard.generalPasteboard())
+    }
+
+    override func validateMenuItem(menuItem: NSMenuItem) -> Bool {
+        switch menuItem.action {
+        case Selector("copy:"):
+            return intValue == nil
+        default:
+            return super.validateMenuItem(menuItem)
+        }
+    }
+
+    //MARK: Dragging Source
+
+    func draggingSession(session: NSDraggingSession, sourceOperationMaskForDraggingContext context: NSDraggingContext) -> NSDragOperation {
+        return .Copy | .Delete
+    }
+
+    func draggingSession(session: NSDraggingSession, endedAtPoint screenPoint: NSPoint, operation: NSDragOperation) {
+        if operation == .Delete {
+            intValue = nil
+        }
+    }
+
+    var mouseDownEvent:NSEvent?
+
+    var highlightForDragging: Bool = false {
+        didSet {
+            needsDisplay = true
+        }
+    }
+
+    //MARK: - Drag Destination
+    override func draggingEntered(sender: NSDraggingInfo) -> NSDragOperation {
+        if sender.draggingSource() === self {
+            return .None
+        }
+        else{
+            highlightForDragging = true
+            return sender.draggingSourceOperationMask()
+        }
+    }
+
+    override func draggingExited(sender: NSDraggingInfo?) {
+        highlightForDragging = false
+    }
+
+    override func prepareForDragOperation(sender: NSDraggingInfo) -> Bool {
+        return true
+    }
+
+    override func performDragOperation(sender: NSDraggingInfo) -> Bool {
+        let ok = readFromPasteboard(sender.draggingPasteboard())
+        return ok
+    }
+
+    override func concludeDragOperation(sender: NSDraggingInfo?) {
+        highlightForDragging = false
     }
 }
