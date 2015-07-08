@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		97A77B591B4DCA8400715E75 /* ConfigurationWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97A77B571B4DCA8400715E75 /* ConfigurationWindowController.swift */; };
+		97A77B5A1B4DCA8400715E75 /* ConfigurationWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 97A77B581B4DCA8400715E75 /* ConfigurationWindowController.xib */; };
 		97D99D751B49964A00BFF31A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97D99D741B49964A00BFF31A /* AppDelegate.swift */; };
 		97D99D771B49964A00BFF31A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97D99D761B49964A00BFF31A /* Images.xcassets */; };
 		97D99D911B49967400BFF31A /* MainWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97D99D8F1B49967400BFF31A /* MainWindowController.swift */; };
@@ -17,6 +19,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		97A77B571B4DCA8400715E75 /* ConfigurationWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigurationWindowController.swift; sourceTree = "<group>"; };
+		97A77B581B4DCA8400715E75 /* ConfigurationWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ConfigurationWindowController.xib; sourceTree = "<group>"; };
 		97D99D6F1B49964A00BFF31A /* Dice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Dice.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		97D99D731B49964A00BFF31A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		97D99D741B49964A00BFF31A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -66,6 +70,8 @@
 				97D99D8F1B49967400BFF31A /* MainWindowController.swift */,
 				97D99D931B49979B00BFF31A /* MainMenu.xib */,
 				97D99D901B49967400BFF31A /* MainWindowController.xib */,
+				97A77B571B4DCA8400715E75 /* ConfigurationWindowController.swift */,
+				97A77B581B4DCA8400715E75 /* ConfigurationWindowController.xib */,
 			);
 			path = Dice;
 			sourceTree = "<group>";
@@ -137,6 +143,7 @@
 			files = (
 				97D99D921B49967400BFF31A /* MainWindowController.xib in Resources */,
 				97D99D771B49964A00BFF31A /* Images.xcassets in Resources */,
+				97A77B5A1B4DCA8400715E75 /* ConfigurationWindowController.xib in Resources */,
 				97D99D941B49979B00BFF31A /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -150,6 +157,7 @@
 			files = (
 				97FD8C6A1B4C94B000C8673C /* NSString+Drawing.swift in Sources */,
 				97D99D911B49967400BFF31A /* MainWindowController.swift in Sources */,
+				97A77B591B4DCA8400715E75 /* ConfigurationWindowController.swift in Sources */,
 				97D99D961B4997F600BFF31A /* DieView.swift in Sources */,
 				97D99D751B49964A00BFF31A /* AppDelegate.swift in Sources */,
 			);

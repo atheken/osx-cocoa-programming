@@ -31,7 +31,7 @@ class DieView:NSView, NSDraggingSource {
 
         //drawWithSize(bounds.size)
         if highlightForDragging {
-            let gradient = NSGradient(startingColor: NSColor.whiteColor(), endingColor: backgroundColor)
+            let gradient = NSGradient(startingColor: self.color, endingColor: backgroundColor)
             gradient.drawInRect(bounds, relativeCenterPosition:NSZeroPoint)
         }
         else {
@@ -71,7 +71,7 @@ class DieView:NSView, NSDraggingSource {
             let dotRadius = edgeLength/12.0
             let dotFrame = dieFrame.rectByInsetting(dx: dotRadius * 2.5, dy: dotRadius * 2.5)
 
-            NSColor.whiteColor().set()
+            self.color.set()
 
             NSGraphicsContext.saveGraphicsState()
 
@@ -337,10 +337,10 @@ class DieView:NSView, NSDraggingSource {
     }
 
     //MARK - Timers!
+    var rollsRemaining = 0
 
-    var rollsRemaining: Int = 0
     func roll(){
-        rollsRemaining = 10
+        rollsRemaining = numberOfTimesToRoll
         NSTimer.scheduledTimerWithTimeInterval(0.15, target: self, selector: Selector("rollTick:"), userInfo: nil, repeats: true)
         window?.makeFirstResponder(nil)
     }
@@ -356,4 +356,12 @@ class DieView:NSView, NSDraggingSource {
         }
         window?.makeFirstResponder(self)
     }
+
+    var color:NSColor = NSColor.whiteColor() {
+        didSet {
+            needsDisplay = true
+        }
+    }
+
+    var numberOfTimesToRoll:Int = 10
 }
