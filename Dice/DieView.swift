@@ -181,8 +181,8 @@ class DieView:NSView, NSDraggingSource {
     }
 
     override func mouseUp(theEvent: NSEvent) {
-        if theEvent.clickCount % 2 == 0 {
-            randomize()
+        if theEvent.clickCount == 2 {
+            roll()
         }
         pressed = false
     }
@@ -334,5 +334,26 @@ class DieView:NSView, NSDraggingSource {
 
     override func concludeDragOperation(sender: NSDraggingInfo?) {
         highlightForDragging = false
+    }
+
+    //MARK - Timers!
+
+    var rollsRemaining: Int = 0
+    func roll(){
+        rollsRemaining = 10
+        NSTimer.scheduledTimerWithTimeInterval(0.15, target: self, selector: Selector("rollTick:"), userInfo: nil, repeats: true)
+        window?.makeFirstResponder(nil)
+    }
+
+    func rollTick(sender:NSTimer){
+        let lastIntValue = intValue
+        while intValue == lastIntValue{
+            randomize()
+        }
+        rollsRemaining--
+        if rollsRemaining == 0 {
+            sender.invalidate()
+        }
+        window?.makeFirstResponder(self)
     }
 }
